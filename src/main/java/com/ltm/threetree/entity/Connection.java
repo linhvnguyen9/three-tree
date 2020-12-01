@@ -10,5 +10,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class Connection implements Serializable {
+
+    private String ipAddress;
+    private String hostname;
+    private int port;
     private String playerID;
 }
