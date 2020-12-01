@@ -85,9 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Player checkLogin(Player player) {
-        String password = player.getPassword();
-        Player player1 = userRepository.findByUsername(player.getUsername());
-        System.out.println(player1.getUsername()+" oc ke "+player1.getPassword());
+        Player player1 = userRepository.findByUsername(player.getUsername()).orElse(new Player());
         if (player.getPassword().equals(player1.getPassword())) {
             return player1;
         } else return null;

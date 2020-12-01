@@ -2,8 +2,7 @@ package com.ltm.threetree.controller;
 
 import com.ltm.threetree.entity.Player;
 import com.ltm.threetree.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,31 +13,30 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/players")
+@Slf4j
 public class UserController {
-
-    private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
 
-    @PostMapping(produces = "appilcation/json", value = "/login")
+    @PostMapping(value = "/login")
     public ResponseEntity<?> checkPlayer(@RequestBody Player player){
         Player check = userService.checkLogin(player);
         if(Objects.nonNull(check)){
-            return new ResponseEntity<>(player,HttpStatus.OK);
-        }else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return ResponseEntity.ok(check);
+        }else return new ResponseEntity<>(HttpStatus.FORBIDDEN.getReasonPhrase(), HttpStatus.FORBIDDEN);
     }
 
     @PostMapping(produces = "application/json", value = "/register")
     public ResponseEntity<?> addPlayer(@RequestBody Player player){
         Player created = userService.addPlayer(player);
-        logger.info("created: {}");
+        log.info("created: {}");
 
         try {
-            logger.info("created successfully");
+            log.info("created successfully");
             return new ResponseEntity<>(created, HttpStatus.OK);
         }catch (NullPointerException e){
-            logger.info("error: {}", e);
+            log.info("error: {}", e);
             return new ResponseEntity<>(HttpStatus.SEE_OTHER.getReasonPhrase(),HttpStatus.SEE_OTHER);
         }
     }
@@ -46,13 +44,13 @@ public class UserController {
     @GetMapping(produces = "application/json", value = "{id}")
     public ResponseEntity<?> findPlayerById(@PathVariable("id") String id){
         Player player =userService.findPlayerById(id);
-        logger.info("find: {}");
+        log.info("find: {}");
 
         if(Objects.nonNull(player)){
-            logger.info("Find successfully");
+            log.info("Find successfully");
             return new ResponseEntity<>(player, HttpStatus.OK);
         }else{
-            logger.info("Not successfully");
+            log.info("Not successfully");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND.getReasonPhrase(), HttpStatus.NOT_FOUND);
         }
     }
@@ -66,12 +64,12 @@ public class UserController {
     @PutMapping(produces = "application/json", value = "/edit-player/{id}")
     public ResponseEntity<?> editPlayer(@RequestBody Player player, @PathVariable("id") String id){
         Player updated = userService.editPlayer(player);
-        logger.info("updated: {}");
+        log.info("updated: {}");
         try {
-            logger.info("updated successfully");
+            log.info("updated successfully");
             return new ResponseEntity<>(updated, HttpStatus.OK);
         }catch (NullPointerException e){
-            logger.info("error: {}", e);
+            log.info("error: {}", e);
             return new ResponseEntity<>(HttpStatus.SEE_OTHER.getReasonPhrase(),HttpStatus.SEE_OTHER);
         }
     }
@@ -79,12 +77,12 @@ public class UserController {
     @PutMapping(produces = "application/json", value = "/update-money/{id}")
     public ResponseEntity<?> updateMoney(@RequestBody Player player, @PathVariable("id") String id){
         Player updated = userService.updateMoney(player);
-        logger.info("updated: {}");
+        log.info("updated: {}");
         try {
-            logger.info("ọc kê ọc kê");
+            log.info("ọc kê ọc kê");
             return new ResponseEntity<>(updated,HttpStatus.OK);
         }catch (NullPointerException e){
-            logger.info("error: {}", e);
+            log.info("error: {}", e);
             return new ResponseEntity<>(HttpStatus.SEE_OTHER.getReasonPhrase(),HttpStatus.SEE_OTHER);
         }
     }
