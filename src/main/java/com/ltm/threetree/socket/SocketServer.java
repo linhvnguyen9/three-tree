@@ -1,4 +1,4 @@
 package com.ltm.threetree.socket;
 
-public class Server {
+public class SocketServer {
 }
