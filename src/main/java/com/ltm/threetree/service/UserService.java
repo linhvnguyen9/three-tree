@@ -9,9 +9,13 @@ public interface UserService {
 
     Player editPlayer(Player player);
 
+    Player updateMoney(Player player);
+
     Player deletePlayer(String id);
 
     Player findPlayerById(String id);
 
-    List<Player> findAllPlayerById(String id);
+    List<Player> findAllPlayer();
+
+    Player checkLogin(Player player);
 }
