@@ -18,10 +18,12 @@ public class ServerService {
 
     @SneakyThrows
     public void newSocketServer() {
+        int count = 0;
         ServerSocket serverSocket = new ServerSocket(8090);
 
         log.info("====create new server=====");
         Socket connectionSocket = serverSocket.accept();
+        count++;
         log.info("==Accepting request from a client==");
 
         while (true) {
@@ -33,21 +35,25 @@ public class ServerService {
             log.info("====Connect success server==== ");
             log.info("=======" + connection.toString());
 
-            setSocket(connection);
+            setSocket(connection, count);
             log.info(connection.toString());
             outToClient.writeObject(connection);
         }
     }
 
-    private void setSocket(Connection connection){
+    private void setSocket(Connection connection, int count){
         InetAddress ip;
         String hostAddress;
         try {
-            ip = InetAddress.getLocalHost();
-            hostAddress = ip.getHostAddress();
-            log.info("=====IP:" + hostAddress);
-            connection.setIpAddress(hostAddress);
-            connection.setMessage("Success");
+            if (count >= 0 && count <= 4){
+                ip = InetAddress.getLocalHost();
+                hostAddress = ip.getHostAddress();
+                log.info("=====IP:" + hostAddress);
+                connection.setIpAddress(hostAddress);
+                connection.setMessage("Success");
+            }else {
+                connection.setMessage("Full slot");
+            }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
