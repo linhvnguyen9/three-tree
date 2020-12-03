@@ -30,13 +30,13 @@ public class UserController {
     @PostMapping(produces = "application/json", value = "/register")
     public ResponseEntity<?> addPlayer(@RequestBody Player player){
         Player created = userService.addPlayer(player);
-        log.info("created: {}");
+        log.info("========Create new player");
 
         try {
             log.info("created successfully");
             return new ResponseEntity<>(created, HttpStatus.OK);
         }catch (NullPointerException e){
-            log.info("error: {}", e);
+            log.info("ERROR: ", e);
             return new ResponseEntity<>(HttpStatus.SEE_OTHER.getReasonPhrase(),HttpStatus.SEE_OTHER);
         }
     }
@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping(produces = "application/json", value = "{id}")
     public ResponseEntity<?> findPlayerById(@PathVariable("id") String id){
         Player player =userService.findPlayerById(id);
-        log.info("find: {}");
+        log.info("===FindPlayer: " + id);
 
         if(Objects.nonNull(player)){
             log.info("Find successfully");
@@ -64,12 +64,12 @@ public class UserController {
     @PutMapping(produces = "application/json", value = "/edit-player/{id}")
     public ResponseEntity<?> editPlayer(@RequestBody Player player, @PathVariable("id") String id){
         Player updated = userService.editPlayer(player);
-        log.info("updated: {}");
+        log.info("updated player: " + id);
         try {
             log.info("updated successfully");
             return new ResponseEntity<>(updated, HttpStatus.OK);
         }catch (NullPointerException e){
-            log.info("error: {}", e);
+            log.info("ERROR: ", e);
             return new ResponseEntity<>(HttpStatus.SEE_OTHER.getReasonPhrase(),HttpStatus.SEE_OTHER);
         }
     }
@@ -77,12 +77,12 @@ public class UserController {
     @PutMapping(produces = "application/json", value = "/update-money/{id}")
     public ResponseEntity<?> updateMoney(@RequestBody Player player, @PathVariable("id") String id){
         Player updated = userService.updateMoney(player);
-        log.info("updated: {}");
+        log.info("===Updated Money Player: " + id);
         try {
-            log.info("ọc kê ọc kê");
+            log.info("==Update money success==");
             return new ResponseEntity<>(updated,HttpStatus.OK);
         }catch (NullPointerException e){
-            log.info("error: {}", e);
+            log.info("ERROR:", e);
             return new ResponseEntity<>(HttpStatus.SEE_OTHER.getReasonPhrase(),HttpStatus.SEE_OTHER);
         }
     }
@@ -90,6 +90,7 @@ public class UserController {
     @DeleteMapping(produces = "application/json", value = "{/id}")
     public ResponseEntity<?> deletePlayer(@PathVariable("id") String id){
         Player deletePlayer = userService.deletePlayer(id);
+        log.info("===Delete Player===");
         if(id.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else

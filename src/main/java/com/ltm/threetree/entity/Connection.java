@@ -1,5 +1,7 @@
 package com.ltm.threetree.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +13,18 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Connection implements Serializable {
 
+    @JsonProperty("ip_address")
     private String ipAddress;
-    private String hostname;
-    private int port;
+
+    @JsonProperty("room_id")
+    private int roomId;
+
+    @JsonProperty("player_id")
     private String playerID;
+
+    @JsonProperty("message")
+    private String message;
 }
