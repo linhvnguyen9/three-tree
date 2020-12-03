@@ -87,11 +87,11 @@ public class UserController {
         }
     }
 
-    @DeleteMapping(produces = "application/json", value = "{/id}")
+    @DeleteMapping(produces = "application/json", value = "/{id}")
     public ResponseEntity<?> deletePlayer(@PathVariable("id") String id){
         Player deletePlayer = userService.deletePlayer(id);
         log.info("===Delete Player===");
-        if(id.isEmpty()) {
+        if(Objects.isNull(deletePlayer)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else
             return new ResponseEntity<>(HttpStatus.OK);
