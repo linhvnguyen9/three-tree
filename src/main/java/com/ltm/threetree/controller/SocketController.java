@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @Slf4j
 public class SocketController {
 
@@ -26,7 +26,7 @@ public class SocketController {
         this.socketClient = socketClient;
     }
 
-    @PostMapping("/new-room")
+    @PostMapping("/join-room")
     public ResponseEntity<?> connectRoom(@RequestBody Connection connection){
         Connection newConnection = socketClient.sendMessage(connection);
         log.info("====Connecting====");

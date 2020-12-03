@@ -15,7 +15,7 @@ public class SocketClient {
 
     @SneakyThrows
     public Connection sendMessage(Connection connection){
-        Socket clientSocket = new Socket("127.0.0.1", 8090);
+        Socket clientSocket = new Socket("192.168.1.65", 8090);
 
         ObjectOutputStream outToServer =
                 new ObjectOutputStream(clientSocket.getOutputStream());

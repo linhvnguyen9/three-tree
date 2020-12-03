@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -27,17 +26,18 @@ public class SocketServer {
 
         log.info("====create new server=====");
         Socket connectionSocket = serverSocket.accept();
+        log.info("==Accepting request from a client==");
 
-        while (true){
+        while (true) {
             ObjectInputStream readFromClient = new ObjectInputStream(connectionSocket.getInputStream());
+            ObjectOutputStream outToClient =
+                    new ObjectOutputStream(connectionSocket.getOutputStream());
             Connection connection = (Connection) readFromClient.readObject();
 
             log.info("====Connect success server==== ");
             log.info("=======" + connection.toString());
 
             setSocket(connection);
-            ObjectOutputStream outToClient =
-                    new ObjectOutputStream(connectionSocket.getOutputStream());
             log.info(connection.toString());
             outToClient.writeBytes(connection.toString());
         }
@@ -49,6 +49,7 @@ public class SocketServer {
         try {
             ip = InetAddress.getLocalHost();
             hostAddress = ip.getHostAddress();
+            log.info("=====IP:" + hostAddress);
             connection.setIpAddress(hostAddress);
         } catch (UnknownHostException e) {
             e.printStackTrace();
