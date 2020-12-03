@@ -19,8 +19,8 @@ public class Connection implements Serializable {
     @JsonProperty("ip_address")
     private String ipAddress;
 
-    @JsonProperty("port")
-    private int port;
+    @JsonProperty("room_id")
+    private int roomId;
 
     @JsonProperty("player_id")
     private String playerID;

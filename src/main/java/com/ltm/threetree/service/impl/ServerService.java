@@ -1,9 +1,8 @@
-package com.ltm.threetree.socket;
+package com.ltm.threetree.service.impl;
 
 import com.ltm.threetree.entity.Connection;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.ObjectInputStream;
@@ -15,10 +14,7 @@ import java.net.UnknownHostException;
 
 @Component
 @Slf4j
-public class SocketServer {
-
-    @Value("${app.ip_address}")
-    private String ipAddress;
+public class ServerService {
 
     @SneakyThrows
     public void newSocketServer() {
@@ -39,7 +35,7 @@ public class SocketServer {
 
             setSocket(connection);
             log.info(connection.toString());
-            outToClient.writeBytes(connection.toString());
+            outToClient.writeObject(connection);
         }
     }
 
@@ -51,6 +47,7 @@ public class SocketServer {
             hostAddress = ip.getHostAddress();
             log.info("=====IP:" + hostAddress);
             connection.setIpAddress(hostAddress);
+            connection.setMessage("Success");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

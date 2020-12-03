@@ -1,4 +1,4 @@
-package com.ltm.threetree.socket;
+package com.ltm.threetree.service.impl;
 
 import com.ltm.threetree.entity.Connection;
 import lombok.SneakyThrows;
@@ -11,11 +11,11 @@ import java.net.Socket;
 
 @Service
 @Slf4j
-public class SocketClient {
+public class ClientService {
 
     @SneakyThrows
-    public Connection sendMessage(Connection connection){
-        Socket clientSocket = new Socket("192.168.1.65", 8090);
+    public Connection joinRoomRequest(Connection connection){
+        Socket clientSocket = new Socket("127.0.0.1", connection.getRoomId());
 
         ObjectOutputStream outToServer =
                 new ObjectOutputStream(clientSocket.getOutputStream());
