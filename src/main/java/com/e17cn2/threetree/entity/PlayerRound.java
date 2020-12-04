@@ -13,8 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class PlayerRound implements Serializable {
-    @Id
-    private String id;
+    private static final long serialVersionUID = 2L;
     private Player player;
     private Card card1;
     private Card card2;
