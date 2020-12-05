@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +24,10 @@ public class ServerService {
     private UserService userService;
 
     @SneakyThrows
-    public void newSocketServer(Socket connectionSocket, int countPlayer) {
-        log.info("====create new server=====");
+    public void newSocketServer(Connection connection,
+                                ObjectOutputStream outToClient, int countPlayer) {
 
         try {
-            log.info("==Accepting request from a client==");
-
-            ObjectInputStream readFromClient = new ObjectInputStream(connectionSocket.getInputStream());
-            ObjectOutputStream outToClient =
-                    new ObjectOutputStream(connectionSocket.getOutputStream());
-            Connection connection = (Connection) readFromClient.readObject();
-
             log.info("====Connect success server==== ");
             log.info("=======" + connection.toString());
 
@@ -47,26 +40,23 @@ public class ServerService {
     }
 
     @SneakyThrows
-    public void returnCard(Socket connectionSocket, int countPlayer){
+    public void returnCard(Connection connection,
+                           ObjectOutputStream outToClient, int countPlayer){
         int countReady = 0;
-        ObjectInputStream readFromClient;
-        ObjectOutputStream outToClient;
-
-        while (true) {
+        try {
             countReady++;
-            log.info("===PLAYER READY===");
-
-            readFromClient = new ObjectInputStream(connectionSocket.getInputStream());
-            outToClient = new ObjectOutputStream(connectionSocket.getOutputStream());
-            Connection connection = (Connection) readFromClient.readObject();
-
+            log.info("===PLAYER READY " + connection.getPlayerId());
             log.info("=======" + connection.toString());
 
             if (countReady >= countPlayer / 2){
                 Round round = setRound(connection, countReady);
                 log.info(round.toString());
+                log.info("=======WAIT FOR RETURN CARD=====");
                 outToClient.writeObject(round);
+                log.info("====RETURN SUCCESS : " + connection.getPlayerId());
             }
+        }catch (SocketException e){
+            log.debug(e.getMessage());
         }
     }
 
@@ -104,7 +94,7 @@ public class ServerService {
         InetAddress ip;
         String hostAddress;
         try {
-            if (count >= 0 && count <= 4 && connection.getMessage().equals("JOIN")){
+            if (count >= 0 && count <= 4){
                 ip = InetAddress.getLocalHost();
                 hostAddress = ip.getHostAddress();
                 log.info("=====IP:" + hostAddress);
