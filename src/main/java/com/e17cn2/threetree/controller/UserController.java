@@ -41,7 +41,7 @@ public class UserController {
         }
     }
 
-    @GetMapping(produces = "application/json", value = "{id}")
+    @GetMapping(produces = "application/json", value = "/{id}")
     public ResponseEntity<?> findPlayerById(@PathVariable("id") String id){
         Player player =userService.findPlayerById(id);
         log.info("===FindPlayer: " + id);

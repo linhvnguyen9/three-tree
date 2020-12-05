@@ -1,7 +1,9 @@
 package com.e17cn2.threetree;
 
 import com.e17cn2.threetree.entity.Card;
+import com.e17cn2.threetree.entity.Round;
 import com.e17cn2.threetree.service.impl.ServerService;
+import com.e17cn2.threetree.util.ReturnCardCallback;
 import com.e17cn2.threetree.util.ThreadCallBack;
 import com.e17cn2.threetree.util.common.SocketThread;
 import lombok.SneakyThrows;
@@ -22,7 +24,7 @@ import java.util.List;
 @SuppressWarnings("InfiniteLoopStatement")
 @SpringBootApplication
 @Slf4j
-public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack {
+public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, ReturnCardCallback {
 
   @Autowired
   private ServerService serverService;
@@ -66,9 +68,10 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack {
 
   @SneakyThrows
   private void dealCards(List<ObjectOutputStream> oos, List<String> listPlayerId) {
+    Round round = serverService.setRound(listPlayerId);
     for (ObjectOutputStream stream:
         oos) {
-      stream.writeObject(serverService.setRound(listPlayerId));
+      stream.writeObject(round);
     }
   }
 
@@ -77,5 +80,10 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack {
     if (shouldDealCards()) {
       dealCards(oos, listPlayerId);
     }
+  }
+
+  @Override
+  public void checkReturnCard() {
+
   }
 }
