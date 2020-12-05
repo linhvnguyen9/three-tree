@@ -12,8 +12,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.e17cn2.threetree.entity.SuiteCard.*;
 
@@ -107,4 +106,48 @@ public class ServerService {
             e.printStackTrace();
         }
     }
+
+    public List<Card> returnCards(){
+        List<Card> cards = new ArrayList<>();
+        List<String> suiteCards = new ArrayList<>();
+        for(int i=1;i<10;i++){
+            for(SuiteCard suiteCard: SuiteCard.values()){
+                suiteCards.add(i+"-"+suiteCard);
+            }
+        }
+        int numberOfElements = 12;
+
+        for (String cardString : getRandomElement(suiteCards, numberOfElements)){
+            Card card = new Card();
+            String[] strs = cardString.split("-");
+            card.setValue(Integer.parseInt(strs[0]));
+            card.setSuiteCard(returnSuite(strs[1]));
+            cards.add(card);
+        }
+        return cards;
+    }
+
+    private SuiteCard returnSuite(String str){
+        for(SuiteCard suite: SuiteCard.values()){
+            if(suite.name().equalsIgnoreCase(str)){
+                return suite;
+            }
+        }
+        return null;
+    }
+
+    public List<String> getRandomElement(List<String> list,
+                                          int totalItems)
+    {
+        Random rand = new Random();
+        List<String> newList = new ArrayList<>();
+        for (int i = 0; i < totalItems; i++) {
+
+            int randomIndex = rand.nextInt(list.size());
+            newList.add(list.get(randomIndex));
+            list.remove(randomIndex);
+        }
+        return newList;
+    }
+
 }

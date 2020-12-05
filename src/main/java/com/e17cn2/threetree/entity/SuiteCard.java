@@ -1,5 +1,8 @@
 package com.e17cn2.threetree.entity;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public enum SuiteCard {
   DIAMONDS(4),
   HEARTS(3),
