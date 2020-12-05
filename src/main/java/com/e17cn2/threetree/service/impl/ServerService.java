@@ -58,7 +58,7 @@ public class ServerService {
     public Round setRound(List<String> listPlayerId){
         Round newRound = new Round();
         List<PlayerRound> playerRounds = new ArrayList<>();
-        List<Card> cards = returnCards();
+        List<Card> cards = returnCards(listPlayerId.size());
         int index = 0;
 
         for (String playerId : listPlayerId){
@@ -95,17 +95,16 @@ public class ServerService {
         }
     }
 
-    public List<Card> returnCards(){
+    public List<Card> returnCards(int numberOfElements){
         List<Card> cards = new ArrayList<>();
         List<String> suiteCards = new ArrayList<>();
-        for(int i=1;i<10;i++){
+        for(int i=1; i < 10; i++){
             for(SuiteCard suiteCard: SuiteCard.values()){
-                suiteCards.add(i+"-"+suiteCard);
+                suiteCards.add(i + "-" + suiteCard);
             }
         }
-        int numberOfElements = 12;
 
-        for (String cardString : getRandomElement(suiteCards, numberOfElements)){
+        for (String cardString : getRandomElement(suiteCards, numberOfElements * 3)){
             Card card = new Card();
             String[] strs = cardString.split("-");
             card.setValue(Integer.parseInt(strs[0]));
