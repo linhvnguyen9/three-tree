@@ -27,7 +27,7 @@ public class SocketThread extends Thread implements Runnable{
         if (checkJoinConnection(connection)){
             serverService.newSocketServer(connection, outToClient, countPlayers);
         }
-
+        log.info("READY: " + connection.toString());
         if (checkReady(connection)){
             serverService.returnCard(connection, outToClient, countPlayers);
         }

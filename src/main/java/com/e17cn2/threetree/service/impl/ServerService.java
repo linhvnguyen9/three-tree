@@ -28,7 +28,7 @@ public class ServerService {
                                 ObjectOutputStream outToClient, int countPlayer) {
 
         try {
-            log.info("====Connect success server==== ");
+            log.info("====Connect success server with player id =  " + connection.getPlayerId());
             log.info("=======" + connection.toString());
 
             setSocket(connection, countPlayer);
