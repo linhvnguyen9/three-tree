@@ -3,8 +3,8 @@ package com.e17cn2.threetree.entity;
 public enum SuiteCard {
   DIAMONDS(4),
   HEARTS(3),
-  SPADE(2),
-  CLUBS(1);
+  CLUBS(2),
+  SPADE(1);
 
   private int numVal;
 

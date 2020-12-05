@@ -7,10 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,53 +37,40 @@ public class ServerService {
         }
     }
 
-    @SneakyThrows
-    public void returnCard(Connection connection,
-                           ObjectOutputStream outToClient, int countPlayer){
-        int countReady = 0;
-        try {
-            countReady++;
-            log.info("===PLAYER READY " + connection.getPlayerId());
-            log.info("=======" + connection.toString());
-
-            if (countReady >= countPlayer / 2){
-                Round round = setRound(connection, countReady);
-                log.info(round.toString());
-                log.info("=======WAIT FOR RETURN CARD=====");
-                outToClient.writeObject(round);
-                log.info("====RETURN SUCCESS : " + connection.getPlayerId());
-            }
-        }catch (SocketException e){
-            log.debug(e.getMessage());
-        }
-    }
-
-    private Round setRound(Connection connection, int countPlayer){
-        Player player1 = userService.findPlayerById("5fc679f37668b97b7039e2aa");
-        Player player2 = userService.findPlayerById("5fc9a417dc13dd0fc1cc3be4");
-        Round newRound = new Round();
-//        for (int i = 0; i <= countPlayer; i++){
-//            PlayerRound playerRound = new PlayerRound();
+//    @SneakyThrows
+//    public void returnCard(Connection connection,
+//                           ObjectOutputStream outToClient, int countPlayer){
+//        try {
+//            log.info("===PLAYER READY " + connection.getPlayerId());
+//            log.info("=======" + connection.toString());
+//
+//            if (countPlayer >=  2){
+//                Round round = setRound();
+//                log.info(round.toString());
+//                log.info("=======WAIT FOR RETURN CARD=====");
+//                outToClient.writeObject(round);
+//                log.info("====RETURN SUCCESS : " + connection.getPlayerId());
+//            }
+//        }catch (SocketException e){
+//            log.debug(e.getMessage());
 //        }
+//    }
 
+    public Round setRound(List<String> listPlayerId){
+        Round newRound = new Round();
         List<PlayerRound> playerRounds = new ArrayList<>();
 
-        PlayerRound playerRound1 = new PlayerRound();
-        playerRound1.setPlayer(player1);
-        playerRound1.setCard1(new Card(HEARTS, 2));
-        playerRound1.setCard2(new Card(DIAMONDS, 5));
-        playerRound1.setCard3(new Card(SPADE, 8));
+        for (String playerId : listPlayerId){
+            Player player = userService.findPlayerById(playerId);
+            PlayerRound playerRound = new PlayerRound();
+//            playerRound.setPlayer(player);
+//            playerRound.setCard1(new Card(HEARTS, 2));
+//            playerRound.setCard2(new Card(DIAMONDS, 5));
+//            playerRound.setCard3(new Card(SPADE, 8));
 
-        PlayerRound playerRound2 = new PlayerRound();
-        playerRound2.setPlayer(player2);
-        playerRound2.setCard1(new Card(SPADE, 6));
-        playerRound2.setCard2(new Card(DIAMONDS, 9));
-        playerRound2.setCard3(new Card(SPADE, 3));
-
-        playerRounds.add(playerRound1);
-        playerRounds.add(playerRound2);
+            playerRounds.add(playerRound);
+        }
         newRound.setPlayerRoundList(playerRounds);
-        newRound.setWinner(player2);
 
         return newRound;
     }
