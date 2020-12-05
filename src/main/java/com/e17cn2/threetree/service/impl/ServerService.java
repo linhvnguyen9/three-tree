@@ -71,8 +71,12 @@ public class ServerService {
 
             index = index + 3;
             playerRounds.add(playerRound);
+            System.out.println(playerRound.toString());
         }
         newRound.setPlayerRoundList(playerRounds);
+        Player player = findWinner(playerRounds);
+        newRound.setWinner(player);
+        System.out.println("WINN: " + player);
 
         return newRound;
     }
@@ -135,6 +139,88 @@ public class ServerService {
             list.remove(randomIndex);
         }
         return newList;
+    }
+
+    public Player findWinner(List<PlayerRound> playerRounds){
+        List<Point> points = new ArrayList<>();
+        if (Objects.nonNull(playerRounds)){
+            for (PlayerRound playerRound:playerRounds) {
+                Point point = new Point();
+                Card card1 = playerRound.getCard1();
+                Card card2 = playerRound.getCard2();
+                Card card3 = playerRound.getCard3();
+                int totalPoint = card1.getValue() + card2.getValue() + card3.getValue();
+                Card maxCard = checkCard(card1, card2, card3);
+
+                point.setUserId(playerRound.getPlayer().getId());
+                point.setTotalPoint(totalPoint % 10);
+                point.setCard(maxCard);
+                points.add(point);
+            }
+        }
+
+        Player player = returnPlayerFromMaxCard(points);
+        return player;
+    }
+
+    private Player returnPlayerFromMaxCard(List<Point> points){
+        Point maxPoint = new Point();
+        for (int i = 0; i < points.size() - 1; i++){
+            if (points.get(i).getTotalPoint() > points.get(i + 1).getTotalPoint()){
+                maxPoint = points.get(i);
+            }else maxPoint = points.get(i + 1);
+
+            if (points.get(i).getTotalPoint() == points.get(i + 1).getTotalPoint()){
+                Card maxCard = checkCard(points.get(i).getCard(), points.get(i + 1).getCard(), null);
+                if (maxCard == points.get(i).getCard()){
+                    maxPoint = points.get(i);
+                }else maxPoint = points.get(i + 1);
+            }
+        }
+
+        Player player = userService.findPlayerById(maxPoint.getUserId());
+        return player;
+    }
+
+    public Card checkCard(Card card1, Card card2, Card card3){
+        Card maxCard = new Card();
+        Card OneDiamond = new Card(DIAMONDS, 1);
+
+        if (card1 != null && card2 != null){
+            if (OneDiamond == card1){
+                maxCard = card1;
+            } else if (OneDiamond == card2){
+                maxCard = card2;
+            } else {
+                if (card1.getSuiteCard().getNumVal() > card1.getSuiteCard().getNumVal()){
+                    maxCard = card1;
+                }else maxCard = card2;
+
+                if (card1.getSuiteCard().getNumVal() == card1.getSuiteCard().getNumVal()){
+                    if (card1.getValue() > card2.getValue()){
+                        maxCard = card1;
+                    }else maxCard = card2;
+                }
+            }
+        }
+
+        if (card3 != null){
+            if (card3 == OneDiamond){
+                maxCard = card3;
+            }else {
+                if (maxCard.getSuiteCard().getNumVal() < card3.getSuiteCard().getNumVal()){
+                    maxCard = card3;
+                }
+
+                if (maxCard.getSuiteCard().getNumVal() == card3.getSuiteCard().getNumVal()){
+                    if (maxCard.getValue() < card3.getValue()){
+                        maxCard = card3;
+                    }
+                }
+            }
+        }
+
+        return maxCard;
     }
 
 }
