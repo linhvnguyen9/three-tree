@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.e17cn2.threetree.entity.SuiteCard.*;
 
@@ -59,15 +58,18 @@ public class ServerService {
     public Round setRound(List<String> listPlayerId){
         Round newRound = new Round();
         List<PlayerRound> playerRounds = new ArrayList<>();
+        List<Card> cards = returnCards();
+        int index = 0;
 
         for (String playerId : listPlayerId){
             Player player = userService.findPlayerById(playerId);
             PlayerRound playerRound = new PlayerRound();
-//            playerRound.setPlayer(player);
-//            playerRound.setCard1(new Card(HEARTS, 2));
-//            playerRound.setCard2(new Card(DIAMONDS, 5));
-//            playerRound.setCard3(new Card(SPADE, 8));
+            playerRound.setPlayer(player);
+            playerRound.setCard1(cards.get(index));
+            playerRound.setCard2(cards.get(index + 1));
+            playerRound.setCard3(cards.get(index + 2));
 
+            index = index + 3;
             playerRounds.add(playerRound);
         }
         newRound.setPlayerRoundList(playerRounds);
@@ -92,4 +94,48 @@ public class ServerService {
             e.printStackTrace();
         }
     }
+
+    public List<Card> returnCards(){
+        List<Card> cards = new ArrayList<>();
+        List<String> suiteCards = new ArrayList<>();
+        for(int i=1;i<10;i++){
+            for(SuiteCard suiteCard: SuiteCard.values()){
+                suiteCards.add(i+"-"+suiteCard);
+            }
+        }
+        int numberOfElements = 12;
+
+        for (String cardString : getRandomElement(suiteCards, numberOfElements)){
+            Card card = new Card();
+            String[] strs = cardString.split("-");
+            card.setValue(Integer.parseInt(strs[0]));
+            card.setSuiteCard(returnSuite(strs[1]));
+            cards.add(card);
+        }
+        return cards;
+    }
+
+    private SuiteCard returnSuite(String str){
+        for(SuiteCard suite: SuiteCard.values()){
+            if(suite.name().equalsIgnoreCase(str)){
+                return suite;
+            }
+        }
+        return null;
+    }
+
+    public List<String> getRandomElement(List<String> list,
+                                          int totalItems)
+    {
+        Random rand = new Random();
+        List<String> newList = new ArrayList<>();
+        for (int i = 0; i < totalItems; i++) {
+
+            int randomIndex = rand.nextInt(list.size());
+            newList.add(list.get(randomIndex));
+            list.remove(randomIndex);
+        }
+        return newList;
+    }
+
 }

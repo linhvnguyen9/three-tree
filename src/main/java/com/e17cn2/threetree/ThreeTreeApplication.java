@@ -1,5 +1,6 @@
 package com.e17cn2.threetree;
 
+import com.e17cn2.threetree.entity.Card;
 import com.e17cn2.threetree.service.impl.ServerService;
 import com.e17cn2.threetree.util.ThreadCallBack;
 import com.e17cn2.threetree.util.common.SocketThread;

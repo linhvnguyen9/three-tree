@@ -16,7 +16,7 @@ public class ClientService {
 
     @SneakyThrows
     public Connection joinRoomRequest(Connection connection){
-        Socket clientSocket = new Socket("127.0.0.1", connection.getRoomId());
+        Socket clientSocket = new Socket("10.170.77.6", connection.getRoomId());
 
         ObjectOutputStream outToServer =
                 new ObjectOutputStream(clientSocket.getOutputStream());
@@ -32,7 +32,7 @@ public class ClientService {
 
     @SneakyThrows
     public Round playGame(Connection connection){
-        Socket clientSocket = new Socket("127.0.0.1", connection.getRoomId());
+        Socket clientSocket = new Socket("10.170.77.6", connection.getRoomId());
 
         ObjectOutputStream outToServer =
             new ObjectOutputStream(clientSocket.getOutputStream());
