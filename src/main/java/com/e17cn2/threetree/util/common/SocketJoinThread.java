@@ -15,9 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
-public class SocketThread extends Thread implements Runnable {
+public class SocketJoinThread extends Thread implements Runnable {
     List<String> listPlayerId;
-    private ServerService serverService;
     ObjectInputStream readFromClient;
     ObjectOutputStream outToClient;
     int countPlayers;
@@ -31,29 +30,19 @@ public class SocketThread extends Thread implements Runnable {
         Connection connection = (Connection) readFromClient.readObject();
         if (checkJoinConnection(connection)){
             listPlayerId.add(connection.getPlayerId());
-            serverService.newSocketServer(connection, outToClient, countPlayers);
         }
 
-        if (connection.getMessage().equals("JOIN")){
+        if (connection.getMessage().equals("JOIN_SUCCESS")){
             checkPlayer = true;
         }
 
         if(checkPlayer){
-            callback.returnNewListPlayer(connection, outToClient, listPlayerId);
+            callback.returnNewListPlayer(connection, listPlayerId);
             checkPlayer = false;
-        }
-
-        connection = (Connection) readFromClient.readObject();
-        if (checkReady(connection)){
-            callback.checkDealCards(listPlayerId);
         }
     }
 
     private boolean checkJoinConnection(Connection connection){
         return connection.getMessage().equals("JOIN");
-    }
-
-    private boolean checkReady(Connection connection){
-        return connection.getMessage().equals("READY");
     }
 }

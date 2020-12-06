@@ -1,12 +1,12 @@
 package com.e17cn2.threetree;
 
-import com.e17cn2.threetree.entity.Card;
 import com.e17cn2.threetree.entity.Connection;
 import com.e17cn2.threetree.entity.Round;
 import com.e17cn2.threetree.service.impl.ServerService;
 import com.e17cn2.threetree.util.ReturnCardCallback;
 import com.e17cn2.threetree.util.ThreadCallBack;
-import com.e17cn2.threetree.util.common.SocketThread;
+import com.e17cn2.threetree.util.common.ReturnCardThread;
+import com.e17cn2.threetree.util.common.SocketJoinThread;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,27 +37,39 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   int countPlayers = 0;
   List<ObjectInputStream> ois = new ArrayList<>();
   List<ObjectOutputStream> oos = new ArrayList<>();
+  List<ObjectInputStream> ois2 = new ArrayList<>();
+  List<ObjectOutputStream> oos2 = new ArrayList<>();
   List<String> listPlayerId = new ArrayList<>();
   List<Connection> connections = new ArrayList();
   boolean checkPlayer = false;
+  Socket connectionSocket;
+  Socket connectionSocket2;
 
   @Override
   public void run(String... args) throws Exception {
-    ServerSocket serverSocket = new ServerSocket(8090);
-    Socket connectionSocket;
+    ServerSocket serverSocket1 = new ServerSocket(8090);
+    ServerSocket serverSocket2 = new ServerSocket(8091);
 
     while (true){
       try{
-        connectionSocket = serverSocket.accept();
+        connectionSocket = serverSocket1.accept();
+        connectionSocket2 = serverSocket2.accept();
         ObjectInputStream readFromClient = new ObjectInputStream(connectionSocket.getInputStream());
         ObjectOutputStream outToClient =
             new ObjectOutputStream(connectionSocket.getOutputStream());
+        ObjectInputStream inputStream = new ObjectInputStream(connectionSocket2.getInputStream());
+        ObjectOutputStream outputStream = new ObjectOutputStream(connectionSocket2.getOutputStream());
         ois.add(readFromClient);
         oos.add(outToClient);
+        ois2.add(inputStream);
+        oos2.add(outputStream);
         countPlayers++;
-        SocketThread socketThread =
-            new SocketThread(listPlayerId, serverService, readFromClient, outToClient, countPlayers, this, checkPlayer);
-        socketThread.start();
+        SocketJoinThread socketJoinThread =
+            new SocketJoinThread(listPlayerId, readFromClient, outToClient, countPlayers, this, checkPlayer);
+        ReturnCardThread returnCardThread
+            = new ReturnCardThread(listPlayerId, inputStream, countPlayers, this);
+        socketJoinThread.start();
+        returnCardThread.start();
       }catch (SocketException e){
         log.warn(e.toString());
       }
@@ -69,9 +81,9 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   }
 
   @SneakyThrows
-  private void dealCards(List<ObjectOutputStream> oos, List<String> listPlayerId) {
+  private void dealCards(List<String> listPlayerId) {
     Round round = serverService.setRound(listPlayerId);
-    for (ObjectOutputStream stream: oos) {
+    for (ObjectOutputStream stream: oos2) {
       stream.writeObject(round);
     }
   }
@@ -79,7 +91,7 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   @Override
   public void checkDealCards(List<String> listPlayerId) {
     if (shouldDealCards()) {
-      dealCards(oos, listPlayerId);
+      dealCards(listPlayerId);
     }
   }
 
@@ -90,13 +102,13 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
 
   @SneakyThrows
   @Override
-  public void returnNewListPlayer(Connection connection,
-                                  ObjectOutputStream outToClient, List<String> listPlayerId) {
+  public void returnNewListPlayer(Connection connection, List<String> listPlayerId) {
+
     for (String playerId : listPlayerId){
       try {
         log.info("=======NEW PLAYER: " + connection.toString());
         log.info(connection.toString());
-        connection.setMessage("SUCCESS");
+        connection.setMessage("JOIN_SUCCESS");
         connection.setRoomId(8090);
         connection.setPlayerId(playerId);
         connections.add(connection);
@@ -104,6 +116,9 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
         e.printStackTrace();
       }
     }
-    outToClient.writeObject(connections);
+
+    for (ObjectOutputStream stream: oos) {
+      stream.writeObject(connections);
+    }
   }
 }

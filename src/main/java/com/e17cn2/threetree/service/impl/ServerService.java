@@ -20,22 +20,6 @@ public class ServerService {
     @Autowired
     private UserService userService;
 
-    @SneakyThrows
-    public void newSocketServer(Connection connection,
-                                ObjectOutputStream outToClient, int countPlayer) {
-
-        try {
-            log.info("====Connect success server with player id =  " + connection.getPlayerId());
-            log.info("=======" + connection.toString());
-
-            setSocket(connection, countPlayer);
-            log.info(connection.toString());
-            outToClient.writeObject(connection);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public Round setRound(List<String> listPlayerId){
         Round newRound = new Round();
         List<PlayerRound> playerRounds = new ArrayList<>();
@@ -57,7 +41,6 @@ public class ServerService {
         newRound.setPlayerRoundList(playerRounds);
         Player player = findWinner(playerRounds);
         newRound.setWinner(player);
-        System.out.println("WINN: " + player);
 
         return newRound;
     }
