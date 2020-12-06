@@ -29,15 +29,16 @@ public class SocketJoinThread extends Thread implements Runnable {
         log.info("==Accepting request from a client==");
         Connection connection = (Connection) readFromClient.readObject();
         if (checkJoinConnection(connection)){
+            System.out.println(connection.toString());
             listPlayerId.add(connection.getPlayerId());
         }
 
-        if (connection.getMessage().equals("JOIN_SUCCESS")){
+        if (connection.getMessage().equals("JOIN")){
             checkPlayer = true;
         }
 
         if(checkPlayer){
-            callback.returnNewListPlayer(connection, listPlayerId);
+            callback.returnNewListPlayer(connection);
             checkPlayer = false;
         }
     }

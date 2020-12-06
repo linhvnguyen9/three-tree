@@ -82,6 +82,7 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
 
   @SneakyThrows
   private void dealCards(List<String> listPlayerId) {
+    this.listPlayerId = listPlayerId;
     Round round = serverService.setRound(listPlayerId);
     for (ObjectOutputStream stream: oos2) {
       stream.writeObject(round);
@@ -102,13 +103,13 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
 
   @SneakyThrows
   @Override
-  public void returnNewListPlayer(Connection connection, List<String> listPlayerId) {
+  public void returnNewListPlayer(Connection connection) {
 
     for (String playerId : listPlayerId){
       try {
         log.info("=======NEW PLAYER: " + connection.toString());
         log.info(connection.toString());
-        connection.setMessage("JOIN_SUCCESS");
+        connection.setMessage("SUCCESS");
         connection.setRoomId(8090);
         connection.setPlayerId(playerId);
         connections.add(connection);

@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Player findPlayerById(String id) {
+        System.out.println("ID: " + id);
         Player player = userRepository.findById(id).orElse(null);
         return player;
     }
