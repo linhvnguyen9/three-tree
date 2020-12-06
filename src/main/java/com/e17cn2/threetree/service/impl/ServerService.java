@@ -1,6 +1,7 @@
 package com.e17cn2.threetree.service.impl;
 
 import com.e17cn2.threetree.entity.*;
+import com.e17cn2.threetree.service.RoomService;
 import com.e17cn2.threetree.service.UserService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,11 @@ import static com.e17cn2.threetree.entity.SuiteCard.*;
 public class ServerService {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoomService roomService;
+
+//    List<String> listPlayerId = new ArrayList<>();
 
     public Round setRound(List<String> listPlayerId){
         Round newRound = new Round();
@@ -41,6 +47,8 @@ public class ServerService {
         newRound.setPlayerRoundList(playerRounds);
         Player player = findWinner(playerRounds);
         newRound.setWinner(player);
+        int port = 8090;
+        money(listPlayerId, player, port);
 
         return newRound;
     }
@@ -190,5 +198,21 @@ public class ServerService {
 
         return maxCard;
     }
+
+    public void money(List<String> listPlayerId, Player winner, int port) {
+        Room room = roomService.findRoomByPort(port);
+            for(String id  : listPlayerId){
+                Player player = userService.findPlayerById(id);
+                if(id.equals(winner.getId())){
+                    double newMoney = player.getMoney() + (listPlayerId.size() - 1) * room.getMinBet();
+                    player.setMoney(newMoney);
+                    userService.updateMoney(player);
+                }else {
+                    double newMoney = player.getMoney() - room.getMinBet();
+                    player.setMoney(newMoney);
+                    userService.updateMoney(player);
+                }
+            }
+        }
 
 }
