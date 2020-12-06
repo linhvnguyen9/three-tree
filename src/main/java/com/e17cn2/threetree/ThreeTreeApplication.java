@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,6 +23,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @SuppressWarnings("InfiniteLoopStatement")
 @SpringBootApplication
 @Slf4j
@@ -29,6 +31,7 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
 
   @Autowired
   private ServerService serverService;
+  List<Connection> connections = new ArrayList();
 
   public static void main(String[] args) {
     SpringApplication.run(ThreeTreeApplication.class, args);
@@ -40,7 +43,6 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   List<ObjectInputStream> ois2 = new ArrayList<>();
   List<ObjectOutputStream> oos2 = new ArrayList<>();
   List<String> listPlayerId = new ArrayList<>();
-  List<Connection> connections = new ArrayList();
   boolean checkPlayer = false;
   Socket connectionSocket;
   Socket connectionSocket2;
@@ -65,9 +67,9 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
         oos2.add(outputStream);
         countPlayers++;
         SocketJoinThread socketJoinThread =
-            new SocketJoinThread(listPlayerId, readFromClient, outToClient, countPlayers, this, checkPlayer);
+            new SocketJoinThread(readFromClient, outToClient, countPlayers, this, checkPlayer);
         ReturnCardThread returnCardThread
-            = new ReturnCardThread(listPlayerId, inputStream, countPlayers, this);
+            = new ReturnCardThread(inputStream, countPlayers, this);
         socketJoinThread.start();
         returnCardThread.start();
       }catch (SocketException e){
@@ -81,8 +83,7 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   }
 
   @SneakyThrows
-  private void dealCards(List<String> listPlayerId) {
-    this.listPlayerId = listPlayerId;
+  private void dealCards() {
     Round round = serverService.setRound(listPlayerId);
     for (ObjectOutputStream stream: oos2) {
       stream.writeObject(round);
@@ -90,9 +91,9 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   }
 
   @Override
-  public void checkDealCards(List<String> listPlayerId) {
+  public void checkDealCards() {
     if (shouldDealCards()) {
-      dealCards(listPlayerId);
+      dealCards();
     }
   }
 
@@ -104,22 +105,31 @@ public class ThreeTreeApplication implements CommandLineRunner, ThreadCallBack, 
   @SneakyThrows
   @Override
   public void returnNewListPlayer(Connection connection) {
-
-    for (String playerId : listPlayerId){
+    System.out.println("IDs: " + this.listPlayerId.toString());
       try {
-        log.info("=======NEW PLAYER: " + connection.toString());
-        log.info(connection.toString());
-        connection.setMessage("SUCCESS");
-        connection.setRoomId(8090);
-        connection.setPlayerId(playerId);
-        connections.add(connection);
-      }catch (Exception e){
-        e.printStackTrace();
-      }
+      log.info("=======NEW PLAYER: " + connection.toString());
+      log.info(connection.toString());
+      connection.setMessage("SUCCESS");
+      connection.setRoomId(8090);
+      connection.setPlayerId(connection.getPlayerId());
+      connections.add(connection);
+    }catch (Exception e){
+      e.printStackTrace();
     }
 
     for (ObjectOutputStream stream: oos) {
+      System.out.println("BEFORE: ");
+      for (Connection connection1 : connections){
+        System.out.println("BUG1: " + connection1.toString());
+      }
+      System.out.println("AFTER: ");
       stream.writeObject(connections);
     }
+  }
+
+  @Override
+  public void addPlayerId(String playerId) {
+    System.out.println("ADD PLAYER: " + playerId);
+    this.listPlayerId.add(playerId);
   }
 }

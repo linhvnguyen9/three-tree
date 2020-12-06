@@ -5,6 +5,7 @@ import com.e17cn2.threetree.entity.Connection;
 import java.util.List;
 
 public interface ThreadCallBack {
-  void checkDealCards(List<String> listPlayerId);
+  void checkDealCards();
   void returnNewListPlayer(Connection connection);
+  void addPlayerId(String playerId);
 }

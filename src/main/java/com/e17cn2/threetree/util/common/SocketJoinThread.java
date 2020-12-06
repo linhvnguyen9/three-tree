@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Slf4j
 public class SocketJoinThread extends Thread implements Runnable {
-    List<String> listPlayerId;
     ObjectInputStream readFromClient;
     ObjectOutputStream outToClient;
     int countPlayers;
@@ -29,8 +28,7 @@ public class SocketJoinThread extends Thread implements Runnable {
         log.info("==Accepting request from a client==");
         Connection connection = (Connection) readFromClient.readObject();
         if (checkJoinConnection(connection)){
-            System.out.println(connection.toString());
-            listPlayerId.add(connection.getPlayerId());
+            callback.addPlayerId(connection.getPlayerId());
         }
 
         if (connection.getMessage().equals("JOIN")){
@@ -39,7 +37,7 @@ public class SocketJoinThread extends Thread implements Runnable {
 
         if(checkPlayer){
             callback.returnNewListPlayer(connection);
-            checkPlayer = false;
+//            checkPlayer = false;
         }
     }
 
