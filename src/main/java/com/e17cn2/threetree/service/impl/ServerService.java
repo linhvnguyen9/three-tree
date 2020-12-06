@@ -36,25 +36,6 @@ public class ServerService {
         }
     }
 
-//    @SneakyThrows
-//    public void returnCard(Connection connection,
-//                           ObjectOutputStream outToClient, int countPlayer){
-//        try {
-//            log.info("===PLAYER READY " + connection.getPlayerId());
-//            log.info("=======" + connection.toString());
-//
-//            if (countPlayer >=  2){
-//                Round round = setRound();
-//                log.info(round.toString());
-//                log.info("=======WAIT FOR RETURN CARD=====");
-//                outToClient.writeObject(round);
-//                log.info("====RETURN SUCCESS : " + connection.getPlayerId());
-//            }
-//        }catch (SocketException e){
-//            log.debug(e.getMessage());
-//        }
-//    }
-
     public Round setRound(List<String> listPlayerId){
         Round newRound = new Round();
         List<PlayerRound> playerRounds = new ArrayList<>();
@@ -153,14 +134,19 @@ public class ServerService {
                 Card maxCard = checkCard(card1, card2, card3);
 
                 point.setUserId(playerRound.getPlayer().getId());
-                point.setTotalPoint(totalPoint % 10);
+                point.setTotalPoint(getPoint(totalPoint));
                 point.setCard(maxCard);
                 points.add(point);
             }
         }
 
-        Player player = returnPlayerFromMaxCard(points);
-        return player;
+        return returnPlayerFromMaxCard(points);
+    }
+
+    private int getPoint(int totalPoint){
+        if (totalPoint % 10 == 0){
+            return 10;
+        }else return totalPoint % 10;
     }
 
     private Player returnPlayerFromMaxCard(List<Point> points){
@@ -178,8 +164,7 @@ public class ServerService {
             }
         }
 
-        Player player = userService.findPlayerById(maxPoint.getUserId());
-        return player;
+        return userService.findPlayerById(maxPoint.getUserId());
     }
 
     public Card checkCard(Card card1, Card card2, Card card3){

@@ -22,6 +22,7 @@ public class SocketThread extends Thread implements Runnable {
     ObjectOutputStream outToClient;
     int countPlayers;
     ThreadCallBack callback;
+    boolean checkPlayer;
 
     @SneakyThrows
     @Override
@@ -31,6 +32,15 @@ public class SocketThread extends Thread implements Runnable {
         if (checkJoinConnection(connection)){
             listPlayerId.add(connection.getPlayerId());
             serverService.newSocketServer(connection, outToClient, countPlayers);
+        }
+
+        if (connection.getMessage().equals("JOIN")){
+            checkPlayer = true;
+        }
+
+        if(checkPlayer){
+            callback.returnNewListPlayer(connection, outToClient, listPlayerId);
+            checkPlayer = false;
         }
 
         connection = (Connection) readFromClient.readObject();
