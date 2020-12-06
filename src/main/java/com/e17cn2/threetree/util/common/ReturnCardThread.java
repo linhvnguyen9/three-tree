@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @Slf4j
 public class ReturnCardThread extends Thread implements Runnable{
-  List<String> listPlayerId;
   ObjectInputStream inputStream;
   int countPlayers;
   ThreadCallBack callback;
@@ -26,7 +25,7 @@ public class ReturnCardThread extends Thread implements Runnable{
     Connection connection = (Connection) inputStream.readObject();
     log.info("CARD: " + connection.toString());
     if (checkReady(connection)){
-      callback.checkDealCards(listPlayerId);
+      callback.checkDealCards();
     }
   }
 
